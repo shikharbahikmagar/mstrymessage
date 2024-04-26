@@ -50,6 +50,11 @@ export default function VerificationEmail({ username, otp }: VerificationEmailPr
                         If you did not request this code, please ignore this email.
                     </Text>
                 </Row>
+                <Row>
+                    <Text>
+                        ShikharBahikMagar@mstryMessge.
+                    </Text>
+                </Row>
                 {/* <Row>
           <Button
             href={`http://localhost:3000/verify/${username}`}
