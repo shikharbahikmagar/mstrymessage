@@ -42,7 +42,7 @@ export async function GET(request: Request) {
         const { username } = result.data;
 
         //searching in database if username is already taken or not
-        const existingUsername = await UserModel.findOne({ username, isVerified: false })
+        const existingUsername = await UserModel.findOne({ username, isVerified: true })
         if (existingUsername) {
             return Response.json({
                 success: false,
