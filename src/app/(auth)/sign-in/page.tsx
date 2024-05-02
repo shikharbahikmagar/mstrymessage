@@ -1,83 +1,63 @@
-'use client'
-import { zodResolver } from "@hookform/resolvers/zod"
-import { signInSchema } from "@/schemas/signInSchema";
-import { useToast } from "@/components/ui/use-toast";
-import {useForm} from 'react-hook-form'
-import axios, { AxiosError } from 'axios'
-import { useRouter } from "next/navigation";
-import { ApiResponse } from "@/types/ApiResponse"
-import { FormControl, Form, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from '@/components/ui/input'
-import { Button } from "@/components/ui/button"
-import { Loader2 } from "lucide-react"
-import * as z from "zod"
-import Link from "next/link"
-import { useState } from "react";
-import  {signIn} from "next-auth/react";
+'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { signIn } from 'next-auth/react';
+import {
+    Form,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/components/ui/use-toast';
+import { signInSchema } from '@/schemas/signInSchema';
 
-export default function signInForm() {
+export default function SignInForm() {
+    const router = useRouter();
 
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const router = useRouter()
-    const {toast} = useToast()
-
-    const form = useForm<z.infer<typeof signInSchema >>({
+    const form = useForm<z.infer<typeof signInSchema>>({
         resolver: zodResolver(signInSchema),
         defaultValues: {
             identifier: '',
-            password: ''
-        }
-    })
-    
+            password: '',
+        },
+    });
+
+    const { toast } = useToast();
     const onSubmit = async (data: z.infer<typeof signInSchema>) => {
+        const result = await signIn('credentials', {
+            redirect: false,
+            identifier: data.identifier,
+            password: data.password,
+        });
 
-        setIsSubmitting(true)
-
-        try {
-                const result = await signIn('credentials', {
-                    redirect: false,
-                    identifier: data.identifier,
-                    password: data.password
-                })
-
-                if(result?.error)
-                    {
-                    if (result.error === "CredentialsSignin"){
-                        toast({
-                            title: 'Failed SignIn',
-                            description: "Invalid username or password",
-                            variant: "destructive"
-                        })
-                    }else {
-                        toast({
-                            title: 'Failed SignIn',
-                            description: result.error,
-                            variant: "destructive"
-                        })
-                    }
-                    }
-
-                    if(result?.url)
-                        {
-                            router.replace('/dashboard')
-                        }
-
-            router.replace('/dashboard')
-
-        } catch (error) {
-            console.log("error signing in", error)
-            const axiosError = error as AxiosError<ApiResponse>
-
-            toast({
-                title: 'Failed SignIn',
-                description: axiosError.response?.data.message,
-                variant: "destructive"
-            })
-
+        if (result?.error) {
+            if (result.error === 'CredentialsSignin') {
+                toast({
+                    title: 'Login Failed',
+                    description: 'Incorrect username or password',
+                    variant: 'destructive',
+                });
+            } else {
+                toast({
+                    title: 'Error',
+                    description: result.error,
+                    variant: 'destructive',
+                });
+            }
         }
-    }
-    
+
+        if (result?.url) {
+            router.replace('/dashboard');
+        }
+    };
+
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-800">
             <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
@@ -95,7 +75,7 @@ export default function signInForm() {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Email/Username</FormLabel>
-                                    <Input placeholder="email" {...field} />
+                                    <Input {...field} />
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -106,7 +86,7 @@ export default function signInForm() {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Password</FormLabel>
-                                    <Input type="password" placeholder="enter password" {...field} />
+                                    <Input type="password" {...field} />
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -124,6 +104,5 @@ export default function signInForm() {
                 </div>
             </div>
         </div>
-    )
+    );
 }
-

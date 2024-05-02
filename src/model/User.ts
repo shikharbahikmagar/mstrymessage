@@ -24,7 +24,7 @@ const MessageSchema: Schema<Message> = new Schema({
 export interface User extends Document {
     username: String;
     email: String;
-    password: String;
+    password: string;
     verifyCode: String;
     VerifyCodeExpiry: Date;
     isVerified: Boolean;
