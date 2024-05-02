@@ -30,6 +30,8 @@ export async function POST(request: Request){
 
             if(existingUserByEmail)
                 {
+                    console.log(existingUserByEmail);
+                    
                     //checking if user is verified or not 
                     //if verified send message user exist
                     //else register user and send verification email
